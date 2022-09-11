@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "xit.web"
+version = "0.1.0"
+description = "Tools useful for web programming in general."
+authors = ["Medardo Antonio Rodriguez"]
+readme = "README.rst"
+packages = [{include = "xit"}]
+license = "GPL-3.0-or-later"
+repository = "https://github.com/med-merchise/xit.web"
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Programming Language :: Python",
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
