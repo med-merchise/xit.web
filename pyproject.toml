@@ -16,6 +16,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.10"
+xit = {path = "../xit", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^5.0.4"
@@ -30,6 +31,9 @@ ipdb = "^0.13.9"
 pytest = "^7.1.2"
 tox = "^3.25.0"
 hypothesis = "^6.46.7"
+
+[tool.poetry.group.docs.dependencies]
+xit-books = {path = "../xit.books", extras = ["all"], develop = true}
 
 [build-system]
 requires = ["poetry-core"]
