@@ -21,6 +21,23 @@ pyyaml = "^6.0"
 pydantic = {extras = ["dotenv"], version = "^1.10.2"}
 pygments = "^2.13.0"
 xit = {path = "../xit", develop = true}
+fastapi = {version = "^0.85.0", optional = true}
+flask = {version = "^2.2.2", optional = true}
+
+
+[tool.poetry.extras]
+apis = [
+    "fastapi",
+]
+pallets = [
+    "flask",
+]
+all = [
+    # apis
+    "fastapi",
+    # pallets
+    "flask",
+]
 
 [tool.poetry.group.dev.dependencies]
 flake8 = "^5.0.4"
