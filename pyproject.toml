@@ -24,6 +24,8 @@ pygments = "^2.13.0"
 xit = {path = "../xit", develop = true}
 fastapi = {version = "^0.85.0", optional = true}
 flask = {version = "^2.2.2", optional = true}
+flask-assets = {version = "^2.0", optional = true}
+dash = {version = "^2.6.2", optional = true}
 
 [tool.poetry.extras]
 apis = [
@@ -31,12 +33,21 @@ apis = [
 ]
 pallets = [
     "flask",
+    "flask-assets",
+]
+plotly = [
+    "dash",
+    "flask-assets",
 ]
 all = [
     # apis
     "fastapi",
     # pallets
     "flask",
+    # plotly
+    "dash",
+    # pallets & plotly
+    "flask-assets",
 ]
 
 [tool.poetry.group.dev.dependencies]
