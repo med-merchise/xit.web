@@ -6,20 +6,25 @@ from xit.web.flasker import Flask
 
 
 FLASK_ARGS = Flask.__init__.__annotations__
-SPECIAL_ARGS = {'import_name', 'instance_relative_config'}
 
 
-def create_app(name: str, *sources: object, **kwargs: object) -> Flask:
+def _get_flask_args(kwargs: dict[str, object]) -> dict[str, object]:
+    """Extract Flask constructor arguments from `create_app` function call."""
+    from xit.tools.mappings import pop_items
+
+    if 'import_name' not in kwargs:
+        return pop_items(kwargs, *FLASK_ARGS)
+    else:
+        raise TypeError(
+            "create_app() got multiple values for argument 'import_name'"
+        )
+
+
+def create_app(import_name: str, *sources: object, **kwargs: object) -> Flask:
     """Create and config the app.
 
     This function receives the same arguments as the `Flask`:class:
-    constructor with two minor differences:
-
-    - ``import_name`` is ignored as ``name`` is used as the first parameter
-      here with the same meaning.
-
-    - ``instance_relative_config`` uses ``True`` as default value
-      (`Flask`:class: uses ``False`` instead).
+    constructor but using as first positional only argument ``import_name``.
 
     Additionally, you can use:
 
@@ -29,17 +34,12 @@ def create_app(name: str, *sources: object, **kwargs: object) -> Flask:
 
     """
     import os
-    from xit.tools.mappings import pop_items
 
-    flask_args = pop_items(
-        kwargs,
-        *(arg for arg in FLASK_ARGS if arg not in SPECIAL_ARGS),
-        instance_relative_config=True,
-    )
-    app = Flask(name, **flask_args)
+    app = Flask(import_name, **_get_flask_args(kwargs))
     os.makedirs(app.instance_path, exist_ok=True)  # ensure instance folder
-    # TODO: add support for blueprints in sources
-    configure_app(app, *(*sources, kwargs), silent=True)
+    if kwargs:
+        sources = (*sources, kwargs)
+    configure_app(app, sources, silent=True)
     return app
 
 
@@ -150,15 +150,21 @@ def configure_app_from_object(
 ) -> bool:
     """Configure an application from an object."""
     import sys
-    from xit.tools.objects import import_object, short_repr as _
-    from xit.tools.mappings import asdict
+    from xit.tools.objects import (
+        get_nested_value,
+        import_object,
+        short_repr as _,
+    )
+    from xit.tools.mappings import asdict, flatten_dict
 
     try:
         if isinstance(obj, str):
             obj = import_object(obj, silent=False)
-        configure_app_from_mapping(
-            app, asdict(obj, filter_key=None), silent=False
-        )
+        mapping = asdict(obj, filter_key=str.isupper)
+        if sep := get_nested_value(obj, 'Config.env_nested_delimiter', None):
+            # Include support for `pydantic` settings
+            mapping = flatten_dict(mapping, sep=sep)
+        configure_app_from_mapping(app, mapping, silent=False)
         return True
     except Exception as error:
         if silent:
@@ -190,7 +196,7 @@ def configure_app_from_envvar(
     from xit.tools.objects import import_object
 
     cfg = app.config
-    if value := os.environ.get(name):
+    if (value := os.environ.get(name)) is not None:
         res = configure_app_from_file(app, value, silent=True)
         if not res:
             try:
