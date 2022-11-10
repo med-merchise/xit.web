@@ -27,6 +27,7 @@ flask = {version = "^2.2.2", optional = true}
 flask-assets = {version = "^2.0", optional = true}
 cssmin = {version = "^0.2.0", optional = true}
 dash = {version = "^2.6.2", optional = true}
+beautifulsoup4 = {version = "^4.11.1", optional = true}
 
 [tool.poetry.extras]
 apis = [
@@ -36,22 +37,25 @@ pallets = [
     "flask",
     "flask-assets",
     "cssmin",
+    "beautifulsoup4",
 ]
-plotly = [
+dash = [
     "dash",
     "flask-assets",
     "cssmin",
+    "beautifulsoup4",
 ]
 all = [
     # apis
     "fastapi",
     # pallets
     "flask",
-    # plotly
+    # dash
     "dash",
-    # pallets & plotly
+    # pallets & dash
     "flask-assets",
     "cssmin",
+    "beautifulsoup4",
 ]
 
 [tool.poetry.group.dev.dependencies]
