@@ -5,23 +5,8 @@ from typing import Callable, Mapping
 from xit.web.flasker import Flask
 
 
-FLASK_ARGS = Flask.__init__.__annotations__
-
-
-def _get_flask_args(kwargs: dict[str, object]) -> dict[str, object]:
-    """Extract Flask constructor arguments from `create_app` function call."""
-    from xit.tools.mappings import pop_items
-
-    if 'import_name' not in kwargs:
-        return pop_items(kwargs, *FLASK_ARGS)
-    else:
-        raise TypeError(
-            "create_app() got multiple values for argument 'import_name'"
-        )
-
-
 def create_app(import_name: str, *sources: object, **kwargs: object) -> Flask:
-    """Create and config the app.
+    """Create and configure a Flask application.
 
     This function receives the same arguments as the `Flask`:class:
     constructor but using as first positional only argument ``import_name``.
@@ -35,7 +20,7 @@ def create_app(import_name: str, *sources: object, **kwargs: object) -> Flask:
     """
     import os
 
-    app = Flask(import_name, **_get_flask_args(kwargs))
+    app = Flask(import_name, **kwargs)
     os.makedirs(app.instance_path, exist_ok=True)  # ensure instance folder
     if kwargs:
         sources = (*sources, kwargs)
