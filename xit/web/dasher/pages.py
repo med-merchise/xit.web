@@ -24,13 +24,11 @@ def _infer_path(page: Callable) -> str:
 
     mod = page.__module__.replace('.', '/')
     pages_folder = get_app().pages_folder.replace(os.sep, '/').strip('/')
-    if pages_folder and pages_folder in mod:
-        module = mod.split(pages_folder)[-1].strip('/')
-    else:
-        module = None
-    if not module:
-        module = mod.split('/')[-1].strip('/')
-    return f'/{module}/{ page.__name__}'.replace("_", "-").lower()
+    sep = pages_folder if pages_folder and pages_folder in mod else '/'
+    module = mod.split(sep)[-1].strip('/')
+    name = '' if page.__name__ in ('index', 'home') else page.__name__
+    path = f'/{module}/{name}' if module else f'/{name}'
+    return path.replace("_", "-").lower()
 
 
 @decorator
